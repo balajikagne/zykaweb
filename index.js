@@ -3,6 +3,8 @@ const passport=require('passport')
 require("./controller/passport-setup")
 const express=require("express");
 const path=require("path");
+const session=require("express-session")
+const cookieSession=require("cookie-session")
 const hbs=require("hbs");
 const app=express();
 const templatepath=path.join(__dirname , "./frontend")
@@ -16,7 +18,7 @@ app.set("views",templatepath);
 app.get('/',(req,res)=>{
     res.render("login")
 })
-//here /login is the route
+//here /login is the rout
 app.get('/login',(req,res)=>{
     res.render("index")
 })
@@ -28,12 +30,21 @@ app.get('/index',(req,res)=>{
 })
 app.get('/success',(req,res)=>{
     res.render("index",{
-        name:req.user.emails[0].value,
+        name:req.user.name,
+        email:req.user.emails[0].value,
         pic:req.user.photos[0].value
     })
 })
+app.use(cookieSession({
+    name:'tuto-session',
+    keys:['key1','key2']
+}))
 app.use(passport.initialize())
-app.use(passport.session())
+app.use(passport.session({
+    secret:'some-secret',
+    cookie:{maxAge:30000},
+    saverUninitialized:false
+}))
 //this command get user photo and mail 
 app.get('/google', passport.authenticate('google',{scope:['profile','email']}));
 app.get('/google/callback',passport.authenticate('google',{failureRedirect:'/failed'})

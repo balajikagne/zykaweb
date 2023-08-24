@@ -1,4 +1,2 @@
-[[redirects]]
-from="/*"
-to "index.hbs"
-status=200
+[build]
+       functions="functions"
